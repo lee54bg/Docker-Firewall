@@ -56,45 +56,90 @@ class Firewall(Thread):
             # <class 'scapy.layers.inet.IP'>
             # print(type(packet))
 
-            match = False
-            
-            if packet.haslayer(TCP):
+            match = None
+            rule_match = None
+
+            for item in access_control:
                 if 'src_port' in rule:
-                    print("TCP src_port")
+                    print("src_port")
 
-                    if packet[TCP].sport == rule['src_port']:
-                        print packet[TCP].sport
+                    if packet.haslayer(TCP):
+                        if packet[TCP].sport == rule['src_port']:
+                            match = True
+                        else:
+                            match = False
+                    elif packet.haslayer(UDP):
+                        if packet[UDP].sport == rule['src_port']:
+                            match = True
+                        else:
+                            match = False
                 if 'dst_port' in rule:
-                    print("TCP dst_port")
+                    if packet.haslayer(TCP):
+                        if packet[TCP].dport == rule['dst_port']:
+                            match = True
+                        else:
+                            match = False
+                    elif packet.haslayer(UDP):
+                        if packet[UDP].sport == rule['dst_port']:
+                            match = True
+                        else:
+                            match = False
 
-                    if packet[TCP].dport == rule['dst_port']:
-                        print packet[TCP].dport
-            if packet.haslayer(UDP):
-                if 'src_port' in rule:
-                    print("UDP src_port")
-
-                    if packet[UDP].sport == rule['src_port']:
-                        print packet[UDP].sport
-                if 'dst_port' in rule:
-                    print("UDP dst_port")
-
-                    if packet[UDP].dport == rule['dst_port']:
-                        print packet[UDP].sport
-            if packet.haslayer(IP):
                 if 'src_ip' in rule:
-                    if packet[IP].src == rule['src_ip']:
-                        print packet[IP].src
+                    if packet.haslayer(IP):
+                        if packet[IP].src == rule['src_ip']:
+                            match = True
+                        else:
+                            match = False
                 if 'dst_ip' in rule:
-                    if packet[IP].dst == rule['dst_ip']:
-                        print packet[IP].dst
+                    if packet.haslayer(IP):
+                        if packet[IP].dst == rule['dst_ip']:
+                            match = True
+                        else:
+                            match = False
 
-
+                if match is True:
+                    rule_match = item
+            
+            print match
+            print rule_match
             if match is True:
-                if action == "accept":
+                if rule_match['action'] == "accept":
                     pkt.accept()
-                elif action == "block"
+                    print("accpeted packet")
+                if rule_match['action'] == "block":
                     pkt.drop()
-                
+            elif match is False:
+                pkt.accept()
+            
+                # if 'src_port' in rule:
+                #     print("TCP src_port")
+
+            #         if packet[TCP].sport == rule['src_port']:
+            #             print packet[TCP].sport
+            #     if 'dst_port' in rule:
+            #         print("TCP dst_port")
+
+            #         if packet[TCP].dport == rule['dst_port']:
+            #             print packet[TCP].dport
+            # if packet.haslayer(UDP):
+            #     if 'src_port' in rule:
+            #         print("UDP src_port")
+
+            #         if packet[UDP].sport == rule['src_port']:
+            #             print packet[UDP].sport
+            #     if 'dst_port' in rule:
+            #         print("UDP dst_port")
+
+            #         if packet[UDP].dport == rule['dst_port']:
+            #             print packet[UDP].sport
+            # if packet.haslayer(IP):
+            #     if 'src_ip' in rule:
+            #         if packet[IP].src == rule['src_ip']:
+            #             print packet[IP].src
+            #     if 'dst_ip' in rule:
+            #         if packet[IP].dst == rule['dst_ip']:
+            #             print packet[IP].dst
         except Exception as e:
             print 'Error: %s' % str(e)
             pkt.drop()
