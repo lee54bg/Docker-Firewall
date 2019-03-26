@@ -10,6 +10,7 @@ import threading
 from threading import Thread
 
 access_control = []
+rule = dict()
 
 class Firewall(Thread):
     def __init__(self):
@@ -56,11 +57,21 @@ class Firewall(Thread):
             # print(type(packet))
             
             if packet.haslayer(TCP):
-                pprint(packet[TCP])
+                if 'src_port' in rule:
+                    if packet[TCP].sport == rule['src_port']
+                if 'dst_port' in rule:
+                    if packet[TCP].dport == rule['dst_port']
             if packet.haslayer(UDP):
-                pprint(packet[UDP])
+                if 'src_port' in rule:
+                    if packet[UDP].sport == rule['src_port']
+                if 'dst_port' in rule:
+                    if packet[UDP].dport == rule['dst_port']
+
             if packet.haslayer(IP):
-                pprint(packet[IP])
+                if 'src_ip' in rule:
+                    if packet[IP].src == rule['src_ip']
+                if 'dst_ip' in rule:
+                    if packet[IP].dst == rule['dst_ip']
         except Exception as e:
             print 'Error: %s' % str(e)
             pkt.drop()
@@ -84,6 +95,7 @@ def basic_function():
                 action = raw_input("Accept or Block: ")
 
                 set_params(src_ip, dst_ip, src_port, dst_port, action)
+                print("Entry successfully added\n")
 
             elif(mode == "2"):
                 print("Upload mode\n")
@@ -97,24 +109,35 @@ def basic_function():
         sys.exit(1)
 
 def set_params(src_ip, dst_ip, src_port, dst_port, action):
-    if src_ip == "":
-        print("Source IP")
-    if dst_ip == "":
-        print("Destination IP")
-    if src_port == "":
-        print("Source Port")
-    if dst_port == "":
-        print("Destination Port")
-    if action == "":
-        print("Action")
+    if src_ip != "":
+        rule.update({"src_ip": src_ip})
+    if dst_ip != "":
+        rule.update({"dst_ip": dst_ip})
+    if src_port != "":
+        rule.update({"src_port": src_port})
+    if dst_port != "":
+        rule.update({"dst_port": dst_port})
+    if action != "":
+        rule.update({"action": action})
     
+    print(rule)
+
+def packet_actions(packet):
+    packet.accept()
 
 # def valid_ip():
 
 # def valid_port():
 
-# def valid_action():
-    
+def valid_action(action):
+    if action == "accept":
+        rule.update({"action": action})
+    if action == "block":
+        rule.update({"action": action})
+    else:
+        print("Invalid Action.  Please try again.\n")
+        continue
+
 
 Firewall()
 
