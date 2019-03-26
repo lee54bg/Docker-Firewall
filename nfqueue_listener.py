@@ -55,23 +55,46 @@ class Firewall(Thread):
 
             # <class 'scapy.layers.inet.IP'>
             # print(type(packet))
+
+            match = False
             
             if packet.haslayer(TCP):
                 if 'src_port' in rule:
-                    if packet[TCP].sport == rule['src_port']
+                    print("TCP src_port")
+
+                    if packet[TCP].sport == rule['src_port']:
+                        print packet[TCP].sport
                 if 'dst_port' in rule:
-                    if packet[TCP].dport == rule['dst_port']
+                    print("TCP dst_port")
+
+                    if packet[TCP].dport == rule['dst_port']:
+                        print packet[TCP].dport
             if packet.haslayer(UDP):
                 if 'src_port' in rule:
-                    if packet[UDP].sport == rule['src_port']
-                if 'dst_port' in rule:
-                    if packet[UDP].dport == rule['dst_port']
+                    print("UDP src_port")
 
+                    if packet[UDP].sport == rule['src_port']:
+                        print packet[UDP].sport
+                if 'dst_port' in rule:
+                    print("UDP dst_port")
+
+                    if packet[UDP].dport == rule['dst_port']:
+                        print packet[UDP].sport
             if packet.haslayer(IP):
                 if 'src_ip' in rule:
-                    if packet[IP].src == rule['src_ip']
+                    if packet[IP].src == rule['src_ip']:
+                        print packet[IP].src
                 if 'dst_ip' in rule:
-                    if packet[IP].dst == rule['dst_ip']
+                    if packet[IP].dst == rule['dst_ip']:
+                        print packet[IP].dst
+
+
+            if match is True:
+                if action == "accept":
+                    pkt.accept()
+                elif action == "block"
+                    pkt.drop()
+                
         except Exception as e:
             print 'Error: %s' % str(e)
             pkt.drop()
@@ -80,10 +103,9 @@ def basic_function():
     try:
         while True:
             intro = "\nWelcome to CMPE 210\n\n" \
-            "Please specify the following modes\n" \
-            "1) Manual Mode\n" \
-            "2) Upload Mode\n" \
-            "3) Exit\n\n"
+            "Please specify the following options\n" \
+            "1) Insert Rule\n" \
+            "2) Exit\n\n"
 
             mode = raw_input(intro)
 
@@ -95,15 +117,14 @@ def basic_function():
                 action = raw_input("Accept or Block: ")
 
                 set_params(src_ip, dst_ip, src_port, dst_port, action)
+                
+                access_control.append(rule)
                 print("Entry successfully added\n")
-
             elif(mode == "2"):
-                print("Upload mode\n")
-            elif(mode == "3"):
                 print("Exiting the Firewall...\n")
                 sys.exit(1)
             else:
-                print("Please try again\n")
+                print("Please try again\n\n")
     except KeyboardInterrupt:
         print("Exiting basic function")
         sys.exit(1)
@@ -114,9 +135,9 @@ def set_params(src_ip, dst_ip, src_port, dst_port, action):
     if dst_ip != "":
         rule.update({"dst_ip": dst_ip})
     if src_port != "":
-        rule.update({"src_port": src_port})
+        rule.update({"src_port": int(src_port)})
     if dst_port != "":
-        rule.update({"dst_port": dst_port})
+        rule.update({"dst_port": int(dst_port)})
     if action != "":
         rule.update({"action": action})
     
@@ -132,12 +153,12 @@ def packet_actions(packet):
 def valid_action(action):
     if action == "accept":
         rule.update({"action": action})
-    if action == "block":
+        return True
+    elif action == "block":
         rule.update({"action": action})
+        return True
     else:
-        print("Invalid Action.  Please try again.\n")
-        continue
-
+        return False
 
 Firewall()
 
