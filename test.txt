@@ -1,0 +1,2 @@
+pwd
+/home/seed/Desktop/Workspace/Docker-Firewall

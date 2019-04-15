@@ -105,6 +105,7 @@ class Firewall(Thread):
             print rule_match
             if match is True:
                 if rule_match['action'] == "accept":
+
                     pkt.accept()
                     print("accpeted packet")
                 if rule_match['action'] == "block":
@@ -143,7 +144,7 @@ class Firewall(Thread):
         except Exception as e:
             print 'Error: %s' % str(e)
             pkt.drop()
-    
+
 def basic_function():
     try:
         while True:
