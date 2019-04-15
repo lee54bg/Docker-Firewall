@@ -1,5 +1,3 @@
-#! /usr/bin/env python2.7
-
 from scapy.all import *
 from netfilterqueue import NetfilterQueue
 from pprint import pprint
@@ -11,6 +9,7 @@ from threading import Thread
 
 access_control = []
 rule = dict()
+counter = 0
 
 class Firewall(Thread):
     def __init__(self):
@@ -32,7 +31,7 @@ class Firewall(Thread):
         sys.stdout.write('Listening on NFQUEUE queue-num %s... \n' % str(QUEUE_NUM))
 
         nfqueue = NetfilterQueue()
-        nfqueue.bind(QUEUE_NUM, self.callback)
+        nfqueue.bind(QUEUE_NUM, self.tcp_counter)
 
         s = socket.fromfd(nfqueue.get_fd(), socket.AF_UNIX, socket.SOCK_STREAM)
 
@@ -45,6 +44,13 @@ class Firewall(Thread):
 
         close_connection(s, nfqueue)
         sys.exit(1)
+
+    def tcp_counter(self, pkt):
+        packet = IP(pkt.get_payload())
+        global counter
+        counter += 1
+        print(counter)
+        pkt.accept()
 
     def callback(self, pkt):
         try:

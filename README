@@ -1,0 +1,16 @@
+Run the following commands first before running docker build
+
+sudo iptables -F
+sudo iptables -t raw -A PREROUTING -j NFQUEUE --queue-num 1
+
+Note:  Make sure you're in the right directory with the Dockerfile file
+before running the command below
+
+docker build -t tcp_counter .
+
+After running docker build, users can then run the following command to run their docker
+
+sudo docker run -it --rm \
+	--cap-add=NET_ADMIN \
+    --net=host \
+    --name=nfqueuelistener nfqueuelistener
