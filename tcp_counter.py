@@ -26,7 +26,7 @@ def tcp_counter(pkt):
     pkt.accept()
 
 try:
-    QUEUE_NUM = int(os.getenv('QUEUE_NUM', 1))
+    QUEUE_NUM = int(os.getenv('QUEUE_NUM', 0))
 except ValueError as e:
     sys.stderr.write('Error: env QUEUE_NUM must be integer\n')
     sys.exit(1)

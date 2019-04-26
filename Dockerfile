@@ -18,6 +18,6 @@ RUN pip install NetfilterQueue
 ADD ./nfqueue_listener.py /nfqueue_listener.py
 ADD ./tcp_counter.py /tcp_counter.py
 
-ENV QUEUE_NUM=1
+ENV QUEUE_NUM=0
 
 ENTRYPOINT python tcp_counter.py
