@@ -15,7 +15,6 @@ RUN apt-get update && \
 RUN pip install scapy
 RUN pip install NetfilterQueue
 
-ADD ./nfqueue_listener.py /nfqueue_listener.py
 ADD ./tcp_counter.py /tcp_counter.py
 
 ENV QUEUE_NUM=0
